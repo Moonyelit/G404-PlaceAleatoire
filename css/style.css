@@ -1,47 +1,66 @@
+/* Couleurs et polices */
+:root {
+    --paper-color: #f5f5dc; /* Couleur de papier ancien */
+    --ink-color: #333333; /* Couleur d'encre */
+    --accent-color: #8B4513; /* Couleur d'accent (marron) */
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --font-primary: 'Courier Prime', monospace; /* Police type machine à écrire */
+    --font-handwritten: 'Architects Daughter', cursive; /* Police type crayonné */
+}
+
 body {
-    font-family: 'Architects Daughter', cursive;
+    font-family: var(--font-primary);
+    background-color: var(--paper-color);
+    color: var(--ink-color);
     text-align: center;
-    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
 }
 
 h1, h2 {
-    font-family: 'Architects Daughter', cursive;
-    color: #333;
+    font-family: var(--font-handwritten);
+    color: var(--accent-color);
+    text-shadow: 2px 2px 4px var(--shadow-color);
 }
 
 .container {
     display: flex;
     justify-content: space-around;
     margin: 20px;
-    height: calc(100vh - 100px); /* Ajusté pour prendre toute la hauteur */
+    height: calc(100vh - 100px);
+    background: url('paper-texture.jpg'); /* Ajoutez une texture de papier en arrière-plan */
+    background-size: cover;
+    padding: 20px;
+    border: 2px solid var(--accent-color);
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px var(--shadow-color);
 }
 
 #table-options, #students-list {
     width: 20%;
-    background: white;
-    padding: 10px;
+    background: var(--paper-color);
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Ajouté pour permettre le défilement si nécessaire */
+    border: 1px solid var(--accent-color);
+    box-shadow: 3px 3px 10px var(--shadow-color);
+    overflow-y: auto;
 }
 
 #classroom {
     width: 50%;
-    background: white;
-    padding: 10px;
+    background: var(--paper-color);
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    height: 95%; /* Ajusté pour prendre toute la hauteur */
+    border: 1px solid var(--accent-color);
+    box-shadow: 3px 3px 10px var(--shadow-color);
+    height: 95%;
 }
 
 #grid {
     width: 100%;
-    height: 90%; /* Ajusté pour prendre toute la hauteur */
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    border: 2px solid #333;
-    background: #ddd;
+    height: 90%;
+    border: 2px dashed var(--accent-color);
+    background: var(--paper-color);
     position: relative;
 }
 
@@ -49,133 +68,89 @@ h1, h2 {
     position: relative;
     width: 60px;
     height: 40px;
-    background: #5DADE2; /* Couleur bleue */
-    color: white;
+    background: var(--paper-color);
+    color: var(--ink-color);
     text-align: center;
     line-height: 40px;
     border-radius: 5px;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 5px;
-    background: linear-gradient(135deg, #5DADE2 25%, transparent 25%) -50px 0,
-                linear-gradient(225deg, #5DADE2 25%, transparent 25%) -50px 0,
-                linear-gradient(15deg, #5DADE2 25%, transparent 25%),
-                linear-gradient(45deg, #5DADE2 25%, transparent 25%);
-    background-size: 20px 20px;
-    background-color: #5DADE2;
+    border: 2px solid var(--accent-color);
+    box-shadow: 3px 3px 10px var(--shadow-color);
+    font-family: var(--font-handwritten);
 }
-
 
 .table2 {
     position: relative;
     width: 40px;
     height: 60px;
-    background: #5DADE2; /* Couleur bleue */
-    color: white;
+    background: var(--paper-color);
+    color: var(--ink-color);
     text-align: center;
-    line-height: 40px;
+    line-height: 60px;
     border-radius: 5px;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 5px;
-    background: linear-gradient(135deg, #5DADE2 25%, transparent 25%) -50px 0,
-                linear-gradient(225deg, #5DADE2 25%, transparent 25%) -50px 0,
-                linear-gradient(15deg, #5DADE2 25%, transparent 25%),
-                linear-gradient(45deg, #5DADE2 25%, transparent 25%);
-    background-size: 20px 20px;
-    background-color: #5DADE2;
+    border: 2px solid var(--accent-color);
+    box-shadow: 3px 3px 10px var(--shadow-color);
+    font-family: var(--font-handwritten);
 }
-
 
 .table-model {
     display: inline-block;
     padding: 5px;
     margin: 10px;
-    border: 2px solid transparent;
+    border: 2px solid var(--accent-color);
     cursor: grab;
     transition: transform 0.2s;
-}
-
-.table-model .table {
-    margin: auto;
+    background: var(--paper-color);
+    box-shadow: 3px 3px 10px var(--shadow-color);
 }
 
 .table-model:hover {
-    border: 2px solid #3498db;
     transform: scale(1.1);
 }
 
 .chair {
     width: 20px;
     height: 20px;
-    background: #FFD700; /* Couleur jaune */
+    background: var(--paper-color);
+    border: 2px solid var(--accent-color);
     border-radius: 50%;
     position: absolute;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    /* Suppression des bordures en pointillés */
-    background: linear-gradient(135deg, #FFD700 25%, transparent 25%) -5px 0,
-                linear-gradient(225deg, #FFD700 25%, transparent 25%) -50px 0,
-                linear-gradient(315deg, #FFD700 25%, transparent 25%),
-                linear-gradient(45deg, #FFD700 25%, transparent 25%);
-    background-size: 20px 20px;
-    background-color: #FFD700;
-}
-
-.chair[data-position="top"] {
-    left: 25px;
-    top: -19px;
-}
-
-.chair[data-position="right"] {
-    left: 48px;
-    top: 22px;
-}
-
-.chair[data-position="bottom"] {
-    left: 25px;
-    top: 45px;
-}
-
-.chair[data-position="left"] {
-    left: -18px;
-    top: 25px;
+    box-shadow: 3px 3px 10px var(--shadow-color);
 }
 
 button {
-    background-color: #3498db;
-    color: white;
+    background-color: var(--accent-color);
+    color: var(--paper-color);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: 5px 0;
+    font-family: var(--font-handwritten);
+    font-size: 16px;
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #6B2E1A; /* Marron plus foncé */
 }
 
 textarea {
     width: 90%;
-    height: 50px; 
-    border: 2px solid #ddd;
+    height: 50px;
+    border: 2px solid var(--accent-color);
     border-radius: 5px;
     padding: 10px;
-    font-family: 'Architects Daughter', cursive;
+    font-family: var(--font-primary);
     resize: none;
-    font-size: 14px; 
+    font-size: 14px;
+    background: var(--paper-color);
+    color: var(--ink-color);
 }
 
 #validated-students-container {
-    border: 2px solid #3498db;
+    border: 2px solid var(--accent-color);
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
@@ -190,16 +165,40 @@ textarea {
 }
 
 #validated-students li {
-    background: #3498db;
-    color: white;
+    background: var(--accent-color);
+    color: var(--paper-color);
     padding: 5px;
     margin: 5px 0;
     border-radius: 5px;
+    font-family: var(--font-handwritten);
 }
 
 hr {
     border: 0;
     height: 2px;
-    background: #3498db;
+    background: var(--accent-color);
     margin: 20px 0;
+}
+
+#saves-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.save-item {
+    background-color: var(--accent-color);
+    color: var(--paper-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 5px 0;
+    font-family: var(--font-handwritten);
+    font-size: 16px;
+}
+
+.save-item:hover {
+    background-color: #6B2E1A; /* Marron plus foncé */
 }

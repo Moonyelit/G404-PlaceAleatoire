@@ -96,6 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
         studentList.forEach(student => {
             const li = document.createElement("li");
             li.textContent = student;
+            li.style.fontFamily = "var(--font-handwritten)"; // Police crayonnée
+            li.style.color = "var(--ink-color)"; // Couleur d'encre
             validatedStudentsList.appendChild(li);
         });
     }
@@ -110,12 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
         table.style.position = "absolute";
         table.style.width = chairPosition === "right" || chairPosition === "left" ? "40px" : "60px";
         table.style.height = chairPosition === "right" || chairPosition === "left" ? "60px" : "40px";
-        table.style.background = "#5DADE2";
-        table.style.color = "white";
+        table.style.background = "var(--paper-color)"; // Couleur de papier
+        table.style.border = "2px solid var(--accent-color)"; // Bordure marron
+        table.style.color = "var(--ink-color)"; // Couleur d'encre
         table.style.textAlign = "center";
         table.style.lineHeight = chairPosition === "right" || chairPosition === "left" ? "60px" : "40px";
         table.style.borderRadius = "5px";
         table.style.cursor = "pointer";
+        table.style.boxShadow = "3px 3px 10px var(--shadow-color)"; // Ombre douce
 
         const rect = grid.getBoundingClientRect();
         table.style.left = `${x - rect.left - 30}px`;
@@ -134,9 +138,11 @@ document.addEventListener("DOMContentLoaded", () => {
         chair.dataset.position = position;
         chair.style.width = "20px";
         chair.style.height = "20px";
-        chair.style.background = "#FFD700";
+        chair.style.background = "var(--paper-color)"; // Couleur de papier
+        chair.style.border = "2px solid var(--accent-color)"; // Bordure marron
         chair.style.borderRadius = "50%";
         chair.style.position = "absolute";
+        chair.style.boxShadow = "3px 3px 10px var(--shadow-color)"; // Ombre douce
 
         setChairPosition(chair, position);
         return chair;
@@ -201,24 +207,23 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Pas assez de tables pour tous les élèves.");
             return;
         }
-    
+
         seatingArrangement = [];
         const shuffledStudents = studentList.slice().sort(() => Math.random() - 0.5);
         const shuffledTables = tables.sort(() => Math.random() - 0.5);
-    
+
         // Vider les tables avant de les remplir
         tables.forEach(table => {
-
             const existingStudentText = table.querySelector(".student-name");
             if (existingStudentText) {
                 existingStudentText.remove();
             }
         });
-    
+
         shuffledStudents.forEach((student, index) => {
             const table = shuffledTables[index];
             const chair = table.querySelector(".chair");
-    
+
             // Ajouter le nom de l'élève sans écraser la chaise
             const studentNameElement = document.createElement("div");
             studentNameElement.classList.add("student-name");
@@ -227,17 +232,18 @@ document.addEventListener("DOMContentLoaded", () => {
             studentNameElement.style.top = "50%";
             studentNameElement.style.left = "50%";
             studentNameElement.style.transform = "translate(-50%, -50%)";
-            studentNameElement.style.color = "white";
+            studentNameElement.style.color = "var(--ink-color)"; // Couleur d'encre
             studentNameElement.style.fontSize = "12px";
-    
+            studentNameElement.style.fontFamily = "var(--font-handwritten)"; // Police crayonnée
+
             table.appendChild(studentNameElement);
-    
+
             // Réattacher la chaise si elle existe
             if (chair) {
                 table.appendChild(chair);
                 setChairPosition(chair, chair.dataset.position);
             }
-    
+
             // Enregistrer la disposition
             seatingArrangement.push({ student, tableId: table.id, chairPosition: chair.dataset.position });
         });
@@ -272,24 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function loadSeatingArrangement() {
         grid.innerHTML = '';
         seatingArrangement.forEach(({ student, tableId, chairPosition }) => {
-            const table = document.createElement("div");
-            table.classList.add(chairPosition === "right" || chairPosition === "left" ? "table2" : "table");
-            table.draggable = true;
+            const table = createTable(chairPosition, 0, 0);
             table.id = tableId;
             table.textContent = student;
-            table.style.position = "absolute";
-            table.style.width = chairPosition === "right" || chairPosition === "left" ? "40px" : "60px";
-            table.style.height = chairPosition === "right" || chairPosition === "left" ? "60px" : "40px";
-            table.style.background = "#5DADE2";
-            table.style.color = "white";
-            table.style.textAlign = "center";
-            table.style.lineHeight = chairPosition === "right" || chairPosition === "left" ? "60px" : "40px";
-            table.style.borderRadius = "5px";
-            table.style.cursor = "pointer";
-
-            const chair = createChair(chairPosition); // Utiliser la position de la chaise stockée
-            table.appendChild(chair);
-
             grid.appendChild(table);
             addTableEventListeners(table);
         });
