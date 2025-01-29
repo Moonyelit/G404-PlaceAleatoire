@@ -1,0 +1,35 @@
+{
+  "configurations": [],
+  "students": [],
+  "maxStudents": 30,
+  "tables": [
+    {
+      "type": "top",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "right",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "bottom",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "left",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

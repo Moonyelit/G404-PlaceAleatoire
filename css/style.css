@@ -1,0 +1,205 @@
+body {
+    font-family: 'Architects Daughter', cursive;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+h1, h2 {
+    font-family: 'Architects Daughter', cursive;
+    color: #333;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px;
+    height: calc(100vh - 100px); /* Ajusté pour prendre toute la hauteur */
+}
+
+#table-options, #students-list {
+    width: 20%;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Ajouté pour permettre le défilement si nécessaire */
+}
+
+#classroom {
+    width: 50%;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 95%; /* Ajusté pour prendre toute la hauteur */
+}
+
+#grid {
+    width: 100%;
+    height: 90%; /* Ajusté pour prendre toute la hauteur */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    border: 2px solid #333;
+    background: #ddd;
+    position: relative;
+}
+
+.table {
+    position: relative;
+    width: 60px;
+    height: 40px;
+    background: #5DADE2; /* Couleur bleue */
+    color: white;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding: 5px;
+    background: linear-gradient(135deg, #5DADE2 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, #5DADE2 25%, transparent 25%) -50px 0,
+                linear-gradient(15deg, #5DADE2 25%, transparent 25%),
+                linear-gradient(45deg, #5DADE2 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-color: #5DADE2;
+}
+
+
+.table2 {
+    position: relative;
+    width: 40px;
+    height: 60px;
+    background: #5DADE2; /* Couleur bleue */
+    color: white;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding: 5px;
+    background: linear-gradient(135deg, #5DADE2 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, #5DADE2 25%, transparent 25%) -50px 0,
+                linear-gradient(15deg, #5DADE2 25%, transparent 25%),
+                linear-gradient(45deg, #5DADE2 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-color: #5DADE2;
+}
+
+
+.table-model {
+    display: inline-block;
+    padding: 5px;
+    margin: 10px;
+    border: 2px solid transparent;
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+.table-model .table {
+    margin: auto;
+}
+
+.table-model:hover {
+    border: 2px solid #3498db;
+    transform: scale(1.1);
+}
+
+.chair {
+    width: 20px;
+    height: 20px;
+    background: #FFD700; /* Couleur jaune */
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Suppression des bordures en pointillés */
+    background: linear-gradient(135deg, #FFD700 25%, transparent 25%) -5px 0,
+                linear-gradient(225deg, #FFD700 25%, transparent 25%) -50px 0,
+                linear-gradient(315deg, #FFD700 25%, transparent 25%),
+                linear-gradient(45deg, #FFD700 25%, transparent 25%);
+    background-size: 20px 20px;
+    background-color: #FFD700;
+}
+
+.chair[data-position="top"] {
+    left: 25px;
+    top: -19px;
+}
+
+.chair[data-position="right"] {
+    left: 48px;
+    top: 22px;
+}
+
+.chair[data-position="bottom"] {
+    left: 25px;
+    top: 45px;
+}
+
+.chair[data-position="left"] {
+    left: -18px;
+    top: 25px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+textarea {
+    width: 90%;
+    height: 50px; 
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: 'Architects Daughter', cursive;
+    resize: none;
+    font-size: 14px; 
+}
+
+#validated-students-container {
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+#validated-students {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#validated-students li {
+    background: #3498db;
+    color: white;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+hr {
+    border: 0;
+    height: 2px;
+    background: #3498db;
+    margin: 20px 0;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Salle de Classe</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/script.js"></script>
+</head>
+<body>
+    <h1>Plan de Salle de Classe</h1>
+    
+    <div class="container">
+        <!-- Liste des tables prédéfinies -->
+        <div id="table-options">
+            <h2>Modèles de tables</h2>
+            <div class="table-model" data-chair="top" draggable="true">
+                <div class="table">
+                    <div class="chair" data-position="top"></div>
+                </div>
+            </div>
+            <div class="table-model" data-chair="right" draggable="true">
+                <div class="table2">
+                    <div class="chair" data-position="right"></div>
+                </div>
+            </div>
+            <div class="table-model" data-chair="bottom" draggable="true">
+                <div class="table">
+                    <div class="chair" data-position="bottom"></div>
+                </div>
+            </div>
+            <div class="table-model" data-chair="left" draggable="true">
+                <div class="table2">
+                    <div class="chair" data-position="left"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Zone de placement des tables -->
+        <div id="classroom">
+            <h2>Plan de Classe</h2>
+            <div id="grid"></div>
+        </div>
+
+        <!-- Liste des prénoms -->
+        <div id="students-list">
+            <h2>Entrer un élève</h2>
+            <textarea id="students" placeholder="Entrez les prénoms, un par ligne..."></textarea>
+            <button id="validate">Valider</button>
+            <hr> <!-- Trait de séparation ajouté -->
+            <h2>Liste des élèves validés</h2>
+            <div id="validated-students-container">
+                <ul id="validated-students"></ul>
+            </div>
+            <button id="randomize">Placement Aléatoire</button>
+            <button id="save">Sauvegarder</button>
+        </div>
+    </div>
+</body>
+</html>
