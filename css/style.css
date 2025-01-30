@@ -96,13 +96,12 @@ h1, h2 {
 
 .table-model {
     display: inline-block;
-    padding: 5px;
     margin: 10px;
-    border: 2px solid var(--accent-color);
     cursor: grab;
     transition: transform 0.2s;
     background: var(--paper-color);
     box-shadow: 3px 3px 10px var(--shadow-color);
+    
 }
 
 .table-model:hover {
