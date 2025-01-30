@@ -35,6 +35,13 @@
                     <div class="chair" data-position="left" style="left: -18px; top: 20px;"></div>
                 </div>
             </div>
+            <!-- Bouton Sauvegarder et liste des sauvegardes -->
+            <button id="save-table-options">Sauvegarder</button>
+            <hr>
+            <h2>Mes sauvegardes</h2>
+            <div id="saves-table-options-container">
+                <!-- Les sauvegardes de tables seront ajoutées ici dynamiquement -->
+            </div>
         </div>
         
         <!-- Zone de placement des tables -->
@@ -48,19 +55,17 @@
             <h2>Entrer un élève</h2>
             <textarea id="students" placeholder="Entrez les prénoms, un par ligne..."></textarea>
             <button id="validate">Valider</button>
-            <hr> <!-- Trait de séparation ajouté -->
+            <hr>
             <h2>Liste des élèves validés</h2>
             <div id="validated-students-container">
                 <ul id="validated-students"></ul>
             </div>
             <button id="randomize">Placement Aléatoire</button>
             <button id="save">Sauvegarder</button>
-            <hr> <!-- Trait de séparation ajouté -->
+            <hr>
             <h2>Mes sauvegardes</h2>
             <div id="saves-container">
-                <button class="save-item">Sauvegarde 1</button>
-                <button class="save-item">Sauvegarde 2</button>
-                <button class="save-item">Sauvegarde 3</button>
+                <!-- Les sauvegardes d'élèves seront ajoutées ici dynamiquement -->
             </div>
         </div>
     </div>

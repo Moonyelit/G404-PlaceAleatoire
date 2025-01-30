@@ -46,6 +46,18 @@ h1, h2 {
     overflow-y: auto;
 }
 
+#table-options button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#saves-table-options-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
 #classroom {
     width: 50%;
     background: var(--paper-color);
@@ -101,7 +113,6 @@ h1, h2 {
     transition: transform 0.2s;
     background: var(--paper-color);
     box-shadow: 3px 3px 10px var(--shadow-color);
-    
 }
 
 .table-model:hover {
@@ -185,7 +196,7 @@ hr {
     align-items: center;
 }
 
-.save-item {
+.save-item, .save-item2 {
     background-color: var(--accent-color);
     color: var(--paper-color);
     border: none;
@@ -198,6 +209,6 @@ hr {
     font-size: 16px;
 }
 
-.save-item:hover {
+.save-item:hover, .save-item2:hover {
     background-color: #6B2E1A; /* Marron plus foncé */
 }
