@@ -89,6 +89,7 @@ h1, h2 {
     border: 2px solid var(--accent-color);
     box-shadow: 3px 3px 10px var(--shadow-color);
     font-family: var(--font-handwritten);
+    transition: opacity 0.5s, z-index 0s 0.5s; /* Transition pour l'animation de disparition */
 }
 
 .table2 {
@@ -103,7 +104,7 @@ h1, h2 {
     cursor: pointer;
     border: 2px solid var(--accent-color);
     box-shadow: 3px 3px 10px var(--shadow-color);
-    font-family: var(--font-handwritten);
+    font-family: var(--font-handwritten);    transition: opacity 0.5s, z-index 0s 0.5s; /* Transition pour l'animation de disparition */
 }
 
 .table-model {
@@ -211,4 +212,17 @@ hr {
 
 .save-item:hover, .save-item2:hover {
     background-color: #6B2E1A; /* Marron plus foncé */
+}
+
+#delete-zone {
+    border: 2px dashed red;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+    width: 95%;
+    background-color: #f0f0f0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 10; /* Pour s'assurer que la zone est au-dessus des tables */
 }

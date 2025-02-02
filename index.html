@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- Configuration de base -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan de Salle de Classe</title>
+    
+    <!-- Ressources externes -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/script.js"></script>
@@ -12,7 +15,7 @@
     <h1>Plan de Salle de Classe</h1>
     
     <div class="container">
-        <!-- Liste des tables prédéfinies -->
+        <!-- Section des modèles de tables -->
         <div id="table-options">
             <h2>Modèles de tables</h2>
             <div class="table-model" data-chair="top" draggable="true">
@@ -35,22 +38,29 @@
                     <div class="chair" data-position="left" style="left: -18px; top: 20px;"></div>
                 </div>
             </div>
-            <!-- Bouton Sauvegarder et liste des sauvegardes -->
-            <button id="save-table-options">Sauvegarder</button>
             <hr>
-            <h2>Mes sauvegardes</h2>
-            <div id="saves-table-options-container">
-                <!-- Les sauvegardes de tables seront ajoutées ici dynamiquement -->
-            </div>
+<h2>Sauvegarder le plan de classe</h2>
+<button id="savePlan">Sauvegarder le plan</button>
+<h2>Mes sauvegardes de plan</h2>
+<div id="plan-saves-container">
+    <button class="plan-save-item" id="plan-save-1">Sauvegarde 1</button>
+    <button class="plan-save-item" id="plan-save-2">Sauvegarde 2</button>
+    <button class="plan-save-item" id="plan-save-3">Sauvegarde 3</button>
+</div>
         </div>
         
-        <!-- Zone de placement des tables -->
+        <!-- Zone principale de placement des tables -->
         <div id="classroom">
             <h2>Plan de Classe</h2>
-            <div id="grid"></div>
+            <div id="grid">
+                <!-- Zone "Supprimer une table" -->
+                <div id="delete-zone">
+                    <h2>Déposer une table à supprimer</h2>
+                </div>
+            </div>
         </div>
 
-        <!-- Liste des prénoms -->
+        <!-- Section de gestion des élèves -->
         <div id="students-list">
             <h2>Entrer un élève</h2>
             <textarea id="students" placeholder="Entrez les prénoms, un par ligne..."></textarea>
@@ -61,13 +71,13 @@
                 <ul id="validated-students"></ul>
             </div>
             <button id="randomize">Placement Aléatoire</button>
-            <button id="save">Sauvegarder</button>
+            <button id="save">Sauvegarder la liste des élèves</button>
             <hr>
-            <h2>Mes sauvegardes</h2>
+            <h2>Mes sauvegardes d'élèves</h2>
             <div id="saves-container">
                 <!-- Les sauvegardes d'élèves seront ajoutées ici dynamiquement -->
             </div>
-        </div>
-    </div>
+          </div>
+          
 </body>
 </html>

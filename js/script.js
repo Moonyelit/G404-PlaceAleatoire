@@ -1,417 +1,469 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Modèles de tables disponibles
+    // Configuration des modèles de tables
     const tableModels = [
-        { type: 'table', chairPosition: 'top' }, // Modèle 1
-        { type: 'table2', chairPosition: 'right' }, // Modèle 2
-        { type: 'table', chairPosition: 'bottom' }, // Modèle 3
-        { type: 'table2', chairPosition: 'left' } // Modèle 4
+      { type: 'table', chairPosition: 'top' },
+      { type: 'table2', chairPosition: 'right' },
+      { type: 'table', chairPosition: 'bottom' },
+      { type: 'table2', chairPosition: 'left' }
     ];
-
-    // Éléments DOM
+  
+    // Récupération des éléments DOM
     const grid = document.getElementById('grid');
     const tableOptions = document.getElementById('table-options');
     const studentsTextarea = document.getElementById('students');
     const validateButton = document.getElementById('validate');
     const validatedStudentsList = document.getElementById('validated-students');
     const randomizeButton = document.getElementById('randomize');
-    const saveButton = document.getElementById('save');
+    // La zone de suppression est présente dans le HTML et réinjectée lors des chargements.
+    const deleteZoneOriginal = document.getElementById('delete-zone');
+  
+    // Éléments pour la sauvegarde du plan de classe
+    const savePlanButton = document.getElementById('savePlan');
+    const planSave1Button = document.getElementById('plan-save-1');
+    const planSave2Button = document.getElementById('plan-save-2');
+    const planSave3Button = document.getElementById('plan-save-3');
+  
+    // Éléments pour la sauvegarde de la liste d'élèves
+    const saveStudentsButton = document.getElementById('save');  // Bouton "Sauvegarder" de la section élèves
     const savesContainer = document.getElementById('saves-container');
-    const saveTableOptionsButton = document.getElementById('save-table-options');
-    const savesTableOptionsContainer = document.getElementById('saves-table-options-container');
-
-    // Variables globales
+  
+    // Variables d'état
     let draggedTable = null;
     let isDragging = false;
-    let currentTable = null; // Table actuellement déplacée
+    let currentTable = null;
     let currentOffset = { x: 0, y: 0 };
     let validatedStudents = [];
-    let isDragAndDrop = false; // Pour suivre si un drag-and-drop est en cours
-    let hasConfirmedExtraTables = false; // Variable pour suivre la confirmation
-
-    // Charger les sauvegardes depuis le localStorage
-    let savedTablePlans = JSON.parse(localStorage.getItem('savedTablePlans')) || [];
-    let savedStudentPlans = JSON.parse(localStorage.getItem('savedStudentPlans')) || [];
-
-    // Mettre à jour les listes de sauvegardes au chargement de la page
-    updateSavedTablePlansList();
-    updateSavedStudentPlansList();
-
-    // Gestion du drag-and-drop pour les modèles de tables
+    let isDragAndDrop = false;
+    let hasConfirmedExtraTables = false;
+    let planSaves = [null, null, null];
+    let studentSaves = [];  // sauvegardes de la liste d'élèves
+  
+    // --- Chargement des sauvegardes depuis localStorage ---
+    const storedPlanSaves = localStorage.getItem('planSaves');
+    if (storedPlanSaves) {
+      planSaves = JSON.parse(storedPlanSaves);
+      for (let i = 0; i < planSaves.length; i++) {
+        if (planSaves[i] !== null) {
+          document.getElementById(`plan-save-${i+1}`).textContent = `Sauvegarde ${i+1} (Sauvegardé)`;
+        }
+      }
+    }
+    const storedStudentSaves = localStorage.getItem('studentSaves');
+    if (storedStudentSaves) {
+      studentSaves = JSON.parse(storedStudentSaves);
+      renderStudentSaves();
+    }
+  
+    // --- Gestion du drag & drop des modèles de tables ---
     tableOptions.addEventListener('dragstart', function (e) {
-        if (e.target.classList.contains('table-model')) {
-            draggedTable = e.target.cloneNode(true);
-            e.dataTransfer.setData('text/plain', ''); // Nécessaire pour Firefox
-        }
+      if (e.target.classList.contains('table-model')) {
+        draggedTable = e.target.cloneNode(true);
+        e.dataTransfer.setData('text/plain', '');
+      }
     });
-
     grid.addEventListener('dragover', function (e) {
-        e.preventDefault();
+      e.preventDefault();
     });
-
     grid.addEventListener('drop', function (e) {
-        e.preventDefault();
-        if (draggedTable) {
-            const clone = draggedTable.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.left = `${e.offsetX - clone.offsetWidth / 2}px`;
-            clone.style.top = `${e.offsetY - clone.offsetHeight / 2}px`;
-            clone.draggable = false;
-
-            // Ajouter un index de modèle par défaut (0) à la table
-            clone.setAttribute('data-model-index', 0);
-            grid.appendChild(clone);
-            draggedTable = null;
-        }
+      e.preventDefault();
+      if (draggedTable) {
+        // Création d'un clone servant de conteneur pour la table
+        const clone = draggedTable.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = `${e.offsetX - clone.offsetWidth / 2}px`;
+        clone.style.top = `${e.offsetY - clone.offsetHeight / 2}px`;
+        clone.draggable = false;
+        clone.setAttribute('data-model-index', 0);
+        // Aucun élève assigné pour l'instant
+        grid.appendChild(clone);
+        draggedTable = null;
+        reinsertDeleteZone();
+      }
     });
-
-    // Rotation des modèles de tables au clic
+  
+    // --- Réinjection de la zone de suppression ---
+    function reinsertDeleteZone() {
+      let deleteZone = grid.querySelector('#delete-zone');
+      if (!deleteZone) {
+        // On recrée la zone à partir de l'originale
+        deleteZone = deleteZoneOriginal.cloneNode(true);
+        deleteZone.draggable = false;
+        deleteZone.style.position = 'absolute';
+        deleteZone.style.bottom = '0';
+        deleteZone.style.left = '0';
+        deleteZone.style.width = '95%';
+        deleteZone.style.zIndex = '10';
+        // Empêcher le drag sur la zone de suppression
+        deleteZone.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+        // Gestion du drop sur la zone de suppression
+        deleteZone.addEventListener('dragover', function(e) { e.preventDefault(); });
+        deleteZone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (currentTable) {
+            currentTable.style.zIndex = '1000';
+            currentTable.style.transition = 'opacity 0.5s';
+            currentTable.style.opacity = '0';
+            // Marquer la table comme supprimée pour qu'elle ne soit plus utilisée par randomize
+            currentTable.classList.add('deleted');
+            setTimeout(() => {
+              currentTable.remove();
+              currentTable = null;
+            }, 500);
+          }
+        });
+        grid.appendChild(deleteZone);
+      }
+    }
+  
+    // --- Rotation des tables au clic ---
     grid.addEventListener('click', function (e) {
-        if (isDragAndDrop) {
-            // Ignorer l'événement click si un drag-and-drop vient d'avoir lieu
-            isDragAndDrop = false;
-            return;
-        }
-
-        const tableElement = e.target.closest('.table, .table2');
-        if (tableElement) {
-            const parent = tableElement.parentElement;
-            const currentIndex = parseInt(parent.getAttribute('data-model-index')) || 0;
-            const nextIndex = (currentIndex + 1) % tableModels.length; // Passe au modèle suivant
-            parent.setAttribute('data-model-index', nextIndex); // Met à jour l'index du modèle
-            updateTableModel(parent, tableModels[nextIndex]);
-        }
+      if (isDragAndDrop) {
+        isDragAndDrop = false;
+        return;
+      }
+      let target = e.target;
+      if (target.nodeType === Node.TEXT_NODE) {
+        target = target.parentElement;
+      }
+      const container = target.closest('[data-model-index]');
+      if (container) {
+        const currentIndex = parseInt(container.getAttribute('data-model-index')) || 0;
+        const nextIndex = (currentIndex + 1) % tableModels.length;
+        container.setAttribute('data-model-index', nextIndex);
+        updateTableModel(container, tableModels[nextIndex]);
+      }
     });
-
-    // Mise à jour du modèle de table
-    function updateTableModel(tableElement, model) {
-        tableElement.innerHTML = ''; // Supprime le contenu actuel
-
-        const table = document.createElement('div');
-        table.className = model.type;
-        table.style.width = model.type === 'table' ? '60px' : '40px';
-        table.style.height = model.type === 'table' ? '40px' : '60px';
-        table.style.lineHeight = model.type === 'table' ? '40px' : '60px';
-        table.style.border = '2px solid var(--accent-color)';
-        table.style.borderRadius = '5px';
-        table.style.boxShadow = '3px 3px 10px var(--shadow-color)';
-        table.style.fontFamily = 'var(--font-handwritten)';
-        table.style.textAlign = 'center';
-        table.style.cursor = 'pointer';
-
-        const chair = document.createElement('div');
-        chair.className = 'chair';
-        chair.style.border = '2px solid var(--accent-color)';
-        chair.style.borderRadius = '50%';
-        chair.style.boxShadow = '3px 3px 10px var(--shadow-color)';
-        chair.style.position = 'absolute';
-
-        switch (model.chairPosition) {
-            case 'top':
-                chair.style.left = '20px';
-                chair.style.top = '-17px';
-                break;
-            case 'right':
-                chair.style.left = '35px';
-                chair.style.top = '20px';
-                break;
-            case 'bottom':
-                chair.style.left = '20px';
-                chair.style.top = '36px';
-                break;
-            case 'left':
-                chair.style.left = '-18px';
-                chair.style.top = '20px';
-                break;
-        }
-
-        table.appendChild(chair);
-        tableElement.appendChild(table);
+  
+    // --- Mise à jour du modèle de table dans un conteneur ---
+    // On reconstruit l'élément "table" (le carré) avec sa "chaise" (le rond)
+    // et on réaffiche le nom de l'élève s'il existe (stocké dans data-student)
+    function updateTableModel(container, model) {
+      const student = container.getAttribute('data-student');
+      container.innerHTML = '';
+      const tableDiv = document.createElement('div');
+      tableDiv.className = model.type;
+      tableDiv.style.width = model.type === 'table' ? '60px' : '40px';
+      tableDiv.style.height = model.type === 'table' ? '40px' : '60px';
+      tableDiv.style.lineHeight = model.type === 'table' ? '40px' : '60px';
+      tableDiv.style.border = '2px solid var(--accent-color)';
+      tableDiv.style.borderRadius = '5px';
+      tableDiv.style.boxShadow = '3px 3px 10px var(--shadow-color)';
+      tableDiv.style.fontFamily = 'var(--font-handwritten)';
+      tableDiv.style.textAlign = 'center';
+      tableDiv.style.cursor = 'pointer';
+  
+      const chair = document.createElement('div');
+      chair.className = 'chair';
+      chair.style.border = '2px solid var(--accent-color)';
+      chair.style.borderRadius = '50%';
+      chair.style.boxShadow = '3px 3px 10px var(--shadow-color)';
+      chair.style.position = 'absolute';
+      switch (model.chairPosition) {
+        case 'top':
+          chair.style.left = '20px';
+          chair.style.top = '-17px';
+          break;
+        case 'right':
+          chair.style.left = '35px';
+          chair.style.top = '20px';
+          break;
+        case 'bottom':
+          chair.style.left = '20px';
+          chair.style.top = '36px';
+          break;
+        case 'left':
+          chair.style.left = '-18px';
+          chair.style.top = '20px';
+          break;
+      }
+      tableDiv.appendChild(chair);
+      if (student) {
+        const textNode = document.createTextNode(student);
+        tableDiv.appendChild(textNode);
+      }
+      container.appendChild(tableDiv);
     }
-
-    // Déplacer les tables dans la grille
+  
+    // --- Gestion du déplacement des tables par souris ---
     grid.addEventListener('mousedown', function (e) {
-        const tableElement = e.target.closest('.table, .table2');
-        if (tableElement) {
-            isDragging = true;
-            isDragAndDrop = false; // Réinitialiser l'état du drag-and-drop
-            currentTable = tableElement.parentElement; // Stocker la table actuellement déplacée
-
-            // Calculer le décalage entre la souris et la position de la table
-            const rect = grid.getBoundingClientRect();
-            currentOffset = {
-                x: e.clientX - rect.left - parseFloat(currentTable.style.left || 0),
-                y: e.clientY - rect.top - parseFloat(currentTable.style.top || 0)
-            };
-
-            // Désactiver la sélection de texte pendant le déplacement
-            e.preventDefault();
-        }
+      let target = e.target;
+      if (target.nodeType === Node.TEXT_NODE) {
+        target = target.parentElement;
+      }
+      const container = target.closest('[data-model-index]');
+      if (container) {
+        isDragging = true;
+        isDragAndDrop = false;
+        currentTable = container;
+        const rect = grid.getBoundingClientRect();
+        currentOffset = {
+          x: e.clientX - rect.left - parseFloat(currentTable.style.left || 0),
+          y: e.clientY - rect.top - parseFloat(currentTable.style.top || 0)
+        };
+        e.preventDefault();
+      }
     });
-
     grid.addEventListener('mousemove', function (e) {
-        if (isDragging && currentTable) {
-            isDragAndDrop = true; // Un drag-and-drop est en cours
-            // Calculer la nouvelle position de la table par rapport à la grille
-            const rect = grid.getBoundingClientRect();
-            const newX = e.clientX - rect.left - currentOffset.x;
-            const newY = e.clientY - rect.top - currentOffset.y;
-
-            // Appliquer la nouvelle position
-            currentTable.style.left = `${newX}px`;
-            currentTable.style.top = `${newY}px`;
-        }
+      if (isDragging && currentTable) {
+        isDragAndDrop = true;
+        const rect = grid.getBoundingClientRect();
+        const newX = e.clientX - rect.left - currentOffset.x;
+        const newY = e.clientY - rect.top - currentOffset.y;
+        currentTable.style.left = `${newX}px`;
+        currentTable.style.top = `${newY}px`;
+      }
     });
-
     grid.addEventListener('mouseup', function (e) {
-        if (isDragging) {
-            isDragging = false;
-            currentTable = null; // Réinitialiser la table actuellement déplacée
+      if (isDragging && currentTable) {
+        const deleteZone = grid.querySelector('#delete-zone');
+        const deleteRect = deleteZone.getBoundingClientRect();
+        const tableRect = currentTable.getBoundingClientRect();
+        if (
+          tableRect.left < deleteRect.right &&
+          tableRect.right > deleteRect.left &&
+          tableRect.top < deleteRect.bottom &&
+          tableRect.bottom > deleteRect.top
+        ) {
+          currentTable.style.zIndex = '1000';
+          currentTable.style.transition = 'opacity 0.5s';
+          currentTable.style.opacity = '0';
+          // Marquer la table comme supprimée pour qu'elle soit ignorée par randomize
+          currentTable.classList.add('deleted');
+          setTimeout(() => {
+            currentTable.remove();
+            currentTable = null;
+          }, 500);
         }
+      }
+      isDragging = false;
+      currentTable = null;
     });
-
-    // Validation des élèves
+  
+    // --- Gestion de la liste d'élèves ---
     validateButton.addEventListener('click', validateStudents);
-
-    // Ajouter un élève en appuyant sur Entrée
     studentsTextarea.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // Empêcher le saut de ligne
-            validateStudents();
-        }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validateStudents();
+      }
     });
-
     function validateStudents() {
-        const students = studentsTextarea.value.split('\n').filter(name => name.trim() !== '');
-        const uniqueStudents = [...new Set(students)]; // Évite les doublons
-        validatedStudents = [...new Set([...validatedStudents, ...uniqueStudents])]; // Ajoute les nouveaux élèves
-        updateValidatedStudentsList();
-        studentsTextarea.value = ''; // Vide le textarea
+      const students = studentsTextarea.value.split('\n').filter(name => name.trim() !== '');
+      const uniqueStudents = [...new Set(students)];
+      validatedStudents = [...new Set([...validatedStudents, ...uniqueStudents])];
+      updateValidatedStudentsList();
+      studentsTextarea.value = '';
     }
-
-    // Mise à jour de la liste des élèves validés
     function updateValidatedStudentsList() {
-        validatedStudentsList.innerHTML = '';
-        validatedStudents.forEach(student => {
-            const li = document.createElement('li');
-            li.textContent = student;
-            validatedStudentsList.appendChild(li);
+      validatedStudentsList.innerHTML = '';
+      validatedStudents.forEach((student, index) => {
+        const li = document.createElement('li');
+        li.textContent = student;
+        const deleteIcon = document.createElement('span');
+        deleteIcon.textContent = ' ❌';
+        deleteIcon.style.cursor = 'pointer';
+        deleteIcon.style.color = 'white';
+        deleteIcon.addEventListener('click', function () {
+          deleteStudent(index);
         });
+        li.appendChild(deleteIcon);
+        validatedStudentsList.appendChild(li);
+      });
     }
-
-    // Placement aléatoire des élèves
+    function deleteStudent(index) {
+      validatedStudents.splice(index, 1);
+      updateValidatedStudentsList();
+    }
+  
+    // --- Placement aléatoire des élèves ---
     randomizeButton.addEventListener('click', function () {
-        const tables = grid.querySelectorAll('.table, .table2');
-        if (validatedStudents.length === 0) {
-            alert('Aucun élève validé !');
-            return;
-        }
-
-        if (tables.length < validatedStudents.length) {
-            alert('Il n\'y a pas assez de tables pour tous les élèves !');
-            return;
-        }
-
-        if (tables.length > validatedStudents.length && !hasConfirmedExtraTables) {
-            const confirmPlacement = confirm('Il y a plus de tables que d\'élèves. Voulez-vous continuer ?');
-            if (!confirmPlacement) return;
-            hasConfirmedExtraTables = true; // Ne plus afficher le message après confirmation
-        }
-
-        // Réinitialiser le texte des tables sans toucher aux chaises
-        tables.forEach(table => {
-            const chair = table.querySelector('.chair');
-            table.textContent = ''; // Efface uniquement le texte, pas les chaises
-            if (chair) {
-                table.appendChild(chair); // Réajoute la chaise
-            }
-        });
-
-        // Assigner les élèves aux tables
-        const shuffledStudents = shuffleArray([...validatedStudents]);
-        tables.forEach((table, index) => {
-            if (index < shuffledStudents.length) {
-                table.textContent = shuffledStudents[index];
-            }
-        });
-    });
-
-    // Fonction pour mélanger un tableau
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // Sauvegarde du plan de classe (tables)
-    saveTableOptionsButton.addEventListener('click', function () {
-        const saveName = prompt('Nommez votre sauvegarde de tables :');
-        if (saveName) {
-            const plan = {
-                name: saveName,
-                tables: Array.from(grid.querySelectorAll('.table, .table2')).map(table => ({
-                    type: table.className,
-                    chairPosition: table.querySelector('.chair').getAttribute('data-position'),
-                    left: table.style.left,
-                    top: table.style.top,
-                    student: table.textContent
-                }))
-            };
-
-            // Limiter à 3 sauvegardes maximum
-            if (savedTablePlans.length >= 3) {
-                savedTablePlans.shift(); // Supprimer la sauvegarde la plus ancienne
-            }
-            savedTablePlans.push(plan);
-            localStorage.setItem('savedTablePlans', JSON.stringify(savedTablePlans));
-            updateSavedTablePlansList();
-        }
-    });
-
-    // Mise à jour de la liste des sauvegardes de tables
-    function updateSavedTablePlansList() {
-        savesTableOptionsContainer.innerHTML = '';
-        savedTablePlans.forEach((plan, index) => {
-            const saveItem = document.createElement('button');
-            saveItem.className = 'save-item2';
-            saveItem.textContent = plan.name;
-            saveItem.addEventListener('click', function () {
-                loadTablePlan(index);
-            });
-            savesTableOptionsContainer.appendChild(saveItem);
-        });
-    }
-
-    // Charger un plan de classe (tables)
-    function loadTablePlan(index) {
-        const plan = savedTablePlans[index];
-        grid.innerHTML = ''; // Vider la grille
-    
-        plan.tables.forEach(tableData => {
-            // Créer l'élément de table
-            const tableElement = document.createElement('div');
-            tableElement.className = tableData.type;
-            tableElement.style.position = 'absolute'; // Position absolue pour le drag-and-drop
-            tableElement.style.left = tableData.left; // Appliquer la position X enregistrée
-            tableElement.style.top = tableData.top; // Appliquer la position Y enregistrée
-            tableElement.textContent = tableData.student;
-    
-            // Créer la chaise
-            const chair = document.createElement('div');
-            chair.className = 'chair';
-            chair.setAttribute('data-position', tableData.chairPosition);
-    
-            // Positionner la chaise en fonction de sa position enregistrée
-            switch (tableData.chairPosition) {
-                case 'top':
-                    chair.style.left = '20px';
-                    chair.style.top = '-17px';
-                    break;
-                case 'right':
-                    chair.style.left = '35px';
-                    chair.style.top = '20px';
-                    break;
-                case 'bottom':
-                    chair.style.left = '20px';
-                    chair.style.top = '36px';
-                    break;
-                case 'left':
-                    chair.style.left = '-18px';
-                    chair.style.top = '20px';
-                    break;
-            }
-    
-            // Ajouter la chaise à la table
-            tableElement.appendChild(chair);
-    
-            // Ajouter la table à la grille
-            grid.appendChild(tableElement);
-    
-            // Réinitialiser le drag-and-drop pour la nouvelle table
-            tableElement.addEventListener('mousedown', function (e) {
-                if (e.target.classList.contains('table') || e.target.classList.contains('table2')) {
-                    isDragging = true;
-                    isDragAndDrop = false;
-                    currentTable = tableElement;
-    
-                    const rect = grid.getBoundingClientRect();
-                    currentOffset = {
-                        x: e.clientX - rect.left - parseFloat(tableElement.style.left || 0),
-                        y: e.clientY - rect.top - parseFloat(tableElement.style.top || 0)
-                    };
-    
-                    e.preventDefault();
-                }
-            });
-        });
-    
-        // Réinitialiser les événements de drag-and-drop pour la grille
-        grid.addEventListener('mousemove', function (e) {
-            if (isDragging && currentTable) {
-                isDragAndDrop = true;
-                const rect = grid.getBoundingClientRect();
-                const newX = e.clientX - rect.left - currentOffset.x;
-                const newY = e.clientY - rect.top - currentOffset.y;
-    
-                currentTable.style.left = `${newX}px`;
-                currentTable.style.top = `${newY}px`;
-            }
-        });
-    
-        grid.addEventListener('mouseup', function (e) {
-            if (isDragging) {
-                isDragging = false;
-                currentTable = null;
-            }
-        });
-    }
-
-    // Sauvegarde du plan de classe (élèves)
-    saveButton.addEventListener('click', function () {
-        const saveName = prompt('Nommez votre sauvegarde d\'élèves :');
-        if (saveName) {
-            const plan = {
-                name: saveName,
-                students: [...validatedStudents]
-            };
-
-            // Limiter à 3 sauvegardes maximum
-            if (savedStudentPlans.length >= 3) {
-                savedStudentPlans.shift(); // Supprimer la sauvegarde la plus ancienne
-            }
-            savedStudentPlans.push(plan);
-            localStorage.setItem('savedStudentPlans', JSON.stringify(savedStudentPlans));
-            updateSavedStudentPlansList();
-        }
-    });
-
-    // Mise à jour de la liste des sauvegardes d'élèves
-    function updateSavedStudentPlansList() {
-        savesContainer.innerHTML = '';
-        savedStudentPlans.forEach((plan, index) => {
-            const saveItem = document.createElement('button');
-            saveItem.className = 'save-item';
-            saveItem.textContent = plan.name;
-            saveItem.addEventListener('click', function () {
-                loadStudentPlan(index);
-            });
-            savesContainer.appendChild(saveItem);
-        });
-    }
-
-    // Charger un plan de classe (élèves)
-    function loadStudentPlan(index) {
-        const plan = savedStudentPlans[index];
-        validatedStudents = [...plan.students];
-        updateValidatedStudentsList();
-    }
-
-    // Supprimer une table
-    grid.addEventListener('dblclick', function (e) {
-        const tableElement = e.target.closest('.table, .table2');
+      // Récupérer uniquement les conteneurs qui ne sont pas marqués comme supprimés
+      const tableContainers = Array.from(grid.querySelectorAll('[data-model-index]'))
+        .filter(container => !container.classList.contains('deleted'));
+      if (validatedStudents.length === 0) {
+        alert('Aucun élève validé !');
+        return;
+      }
+      if (tableContainers.length < validatedStudents.length) {
+        alert('Il n\'y a pas assez de tables pour tous les élèves !');
+        return;
+      }
+      if (tableContainers.length > validatedStudents.length && !hasConfirmedExtraTables) {
+        const confirmPlacement = confirm('Il y a plus de tables que d\'élèves. Voulez-vous continuer ?');
+        if (!confirmPlacement) return;
+        hasConfirmedExtraTables = true;
+      }
+      // Mélanger aléatoirement les conteneurs et la liste des élèves
+      const shuffledContainers = shuffleArray(tableContainers);
+      const shuffledStudents = shuffleArray([...validatedStudents]);
+      // Pour chaque conteneur du tableau mélangé,
+      // mettre à jour le contenu de l'élément "table" sans détruire la structure (table + chaise)
+      shuffledContainers.forEach((container, index) => {
+        const tableElement = container.querySelector('.table, .table2');
         if (tableElement) {
-            tableElement.remove();
+          // Supprimer uniquement les nœuds texte existants (ne pas toucher à la chaise)
+          Array.from(tableElement.childNodes).forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+              tableElement.removeChild(child);
+            }
+          });
+          if (index < shuffledStudents.length) {
+            const student = shuffledStudents[index];
+            container.setAttribute('data-student', student);
+            tableElement.appendChild(document.createTextNode(student));
+          } else {
+            container.removeAttribute('data-student');
+          }
         }
+      });
     });
-});
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  
+    // --- Réinitialisation des tables chargées (et réinjection de la zone de suppression) ---
+    function reinitializeLoadedTables() {
+      const loadedContainers = grid.children;
+      for (let container of loadedContainers) {
+        if (container.id !== 'delete-zone') {
+          container.draggable = false;
+          container.style.position = 'absolute';
+          if (!container.hasAttribute('data-model-index')) {
+            container.setAttribute('data-model-index', 0);
+          }
+        }
+      }
+      reinsertDeleteZone();
+    }
+    function reinsertDeleteZone() {
+      let deleteZone = grid.querySelector('#delete-zone');
+      if (!deleteZone) {
+        deleteZone = deleteZoneOriginal.cloneNode(true);
+        deleteZone.draggable = false;
+        deleteZone.style.position = 'absolute';
+        deleteZone.style.bottom = '0';
+        deleteZone.style.left = '0';
+        deleteZone.style.width = '95%';
+        deleteZone.style.zIndex = '10';
+        deleteZone.addEventListener('mousedown', function(e) { e.stopPropagation(); });
+        deleteZone.addEventListener('dragover', function(e) { e.preventDefault(); });
+        deleteZone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (currentTable) {
+            currentTable.style.zIndex = '1000';
+            currentTable.style.transition = 'opacity 0.5s';
+            currentTable.style.opacity = '0';
+            currentTable.classList.add('deleted');
+            setTimeout(() => {
+              currentTable.remove();
+              currentTable = null;
+            }, 500);
+          }
+        });
+        grid.appendChild(deleteZone);
+      }
+    }
+  
+    // --- Sauvegarde du plan de classe ---
+    function removeDeleteZoneFromGrid() {
+      const deleteZone = grid.querySelector('#delete-zone');
+      if (deleteZone) {
+        deleteZone.parentElement.removeChild(deleteZone);
+      }
+    }
+    savePlanButton.addEventListener('click', function() {
+      removeDeleteZoneFromGrid();
+      let slot = planSaves.findIndex(save => save === null);
+      if (slot === -1) {
+        let choice = prompt("Tous les emplacements sont utilisés. Entrez le numéro de l'emplacement à écraser (1, 2 ou 3) :");
+        if (choice === null) return;
+        slot = parseInt(choice, 10) - 1;
+        if (slot < 0 || slot > 2) {
+          alert("Numéro d'emplacement invalide.");
+          return;
+        }
+      }
+      planSaves[slot] = grid.innerHTML;
+      localStorage.setItem('planSaves', JSON.stringify(planSaves));
+      document.getElementById(`plan-save-${slot+1}`).textContent = `Sauvegarde ${slot+1} (Sauvegardé)`;
+      alert(`Plan de classe sauvegardé dans l'emplacement ${slot+1}.`);
+      reinsertDeleteZone();
+    });
+    planSave1Button.addEventListener('click', function() {
+      if (planSaves[0] !== null) {
+        grid.innerHTML = planSaves[0];
+        reinitializeLoadedTables();
+      } else {
+        alert("Aucune sauvegarde dans l'emplacement 1.");
+      }
+    });
+    planSave2Button.addEventListener('click', function() {
+      if (planSaves[1] !== null) {
+        grid.innerHTML = planSaves[1];
+        reinitializeLoadedTables();
+      } else {
+        alert("Aucune sauvegarde dans l'emplacement 2.");
+      }
+    });
+    planSave3Button.addEventListener('click', function() {
+      if (planSaves[2] !== null) {
+        grid.innerHTML = planSaves[2];
+        reinitializeLoadedTables();
+      } else {
+        alert("Aucune sauvegarde dans l'emplacement 3.");
+      }
+    });
+  
+    // --- Sauvegarde de la liste d'élèves (limite 3) ---
+    saveStudentsButton.addEventListener('click', function() {
+      if (validatedStudents.length === 0) {
+        alert("Aucun élève validé à sauvegarder.");
+        return;
+      }
+      let slot;
+      if (studentSaves.length < 3) {
+        slot = studentSaves.length; // Nouvelle sauvegarde
+      } else {
+        let choice = prompt("Les 3 emplacements sont utilisés. Entrez le numéro de l'emplacement à écraser (1, 2 ou 3) :");
+        if (!choice) return;
+        slot = parseInt(choice, 10) - 1;
+        if (slot < 0 || slot > 2) {
+          alert("Numéro d'emplacement invalide.");
+          return;
+        }
+      }
+      const saveName = prompt("Nom de la sauvegarde de la liste d'élèves :", "Sauvegarde " + (slot + 1));
+      if (!saveName) return;
+      const saveObj = {
+        name: saveName,
+        students: validatedStudents
+      };
+      if (studentSaves.length < 3) {
+        studentSaves.push(saveObj);
+      } else {
+        studentSaves[slot] = saveObj;
+      }
+      localStorage.setItem('studentSaves', JSON.stringify(studentSaves));
+      renderStudentSaves();
+      alert("Liste d'élèves sauvegardée.");
+    });
+    function renderStudentSaves() {
+      savesContainer.innerHTML = '';
+      studentSaves.forEach((save, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = save.name;
+        btn.addEventListener('click', function() {
+          validatedStudents = save.students;
+          updateValidatedStudentsList();
+        });
+        savesContainer.appendChild(btn);
+      });
+    }
+  });
+  
