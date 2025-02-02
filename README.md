@@ -16,7 +16,7 @@ Ce projet a pour but de créer une application web modulable permettant de gére
 ## 🛠️ Installation
 
 1. Clonez le dépôt sur votre machine locale :  
-   git clone https://github.com/VotreNom/votre-repo.git
+   git clone https://github.com/Moonyelit/G404-PlaceAleatoire.git
 2. OU, rendez-vous sur le site directement via ce lien : [Ici](https://moonyelit.github.io/G404-PlaceAleatoire/)
 3. Ouvrez le fichier `index.html` dans votre navigateur pour accéder à l'application.
 
