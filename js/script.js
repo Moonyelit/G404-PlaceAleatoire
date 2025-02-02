@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', function () {
+    /* --- Gestion de l'overlay de bienvenue --- */
+    const startButton = document.getElementById('start-button');
+    const landingOverlay = document.getElementById('landing-overlay');
+    startButton.addEventListener('click', function () {
+      landingOverlay.classList.add('slide-up');
+      setTimeout(() => {
+        landingOverlay.style.display = 'none';
+      }, 3000); // durée de la transition en ms
+    });
+    
     // Configuration des modèles de tables
     const tableModels = [
       { type: 'table', chairPosition: 'top' },
@@ -6,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
       { type: 'table', chairPosition: 'bottom' },
       { type: 'table2', chairPosition: 'left' }
     ];
-  
+    
     // Récupération des éléments DOM
     const grid = document.getElementById('grid');
     const tableOptions = document.getElementById('table-options');
@@ -14,19 +24,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const validateButton = document.getElementById('validate');
     const validatedStudentsList = document.getElementById('validated-students');
     const randomizeButton = document.getElementById('randomize');
-    // La zone de suppression est présente dans le HTML et réinjectée lors des chargements.
     const deleteZoneOriginal = document.getElementById('delete-zone');
-  
+    
     // Éléments pour la sauvegarde du plan de classe
     const savePlanButton = document.getElementById('savePlan');
     const planSave1Button = document.getElementById('plan-save-1');
     const planSave2Button = document.getElementById('plan-save-2');
     const planSave3Button = document.getElementById('plan-save-3');
-  
+    
     // Éléments pour la sauvegarde de la liste d'élèves
-    const saveStudentsButton = document.getElementById('save');  // Bouton "Sauvegarder" de la section élèves
+    const saveStudentsButton = document.getElementById('save');
     const savesContainer = document.getElementById('saves-container');
-  
+    
     // Variables d'état
     let draggedTable = null;
     let isDragging = false;
@@ -35,16 +44,17 @@ document.addEventListener('DOMContentLoaded', function () {
     let validatedStudents = [];
     let isDragAndDrop = false;
     let hasConfirmedExtraTables = false;
+    // Pour les plans, nous utilisons désormais un tableau d'objets avec { name, html }
     let planSaves = [null, null, null];
-    let studentSaves = [];  // sauvegardes de la liste d'élèves
-  
-    // --- Chargement des sauvegardes depuis localStorage ---
+    let studentSaves = [];
+    
+    // Chargement des sauvegardes depuis localStorage
     const storedPlanSaves = localStorage.getItem('planSaves');
     if (storedPlanSaves) {
       planSaves = JSON.parse(storedPlanSaves);
       for (let i = 0; i < planSaves.length; i++) {
         if (planSaves[i] !== null) {
-          document.getElementById(`plan-save-${i+1}`).textContent = `Sauvegarde ${i+1} (Sauvegardé)`;
+          document.getElementById(`plan-save-${i+1}`).textContent = `${planSaves[i].name}`;
         }
       }
     }
@@ -53,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
       studentSaves = JSON.parse(storedStudentSaves);
       renderStudentSaves();
     }
-  
-    // --- Gestion du drag & drop des modèles de tables ---
+    
+    // Gestion du drag & drop des modèles de tables
     tableOptions.addEventListener('dragstart', function (e) {
       if (e.target.classList.contains('table-model')) {
         draggedTable = e.target.cloneNode(true);
@@ -67,25 +77,22 @@ document.addEventListener('DOMContentLoaded', function () {
     grid.addEventListener('drop', function (e) {
       e.preventDefault();
       if (draggedTable) {
-        // Création d'un clone servant de conteneur pour la table
         const clone = draggedTable.cloneNode(true);
         clone.style.position = 'absolute';
         clone.style.left = `${e.offsetX - clone.offsetWidth / 2}px`;
         clone.style.top = `${e.offsetY - clone.offsetHeight / 2}px`;
         clone.draggable = false;
         clone.setAttribute('data-model-index', 0);
-        // Aucun élève assigné pour l'instant
         grid.appendChild(clone);
         draggedTable = null;
         reinsertDeleteZone();
       }
     });
-  
-    // --- Réinjection de la zone de suppression ---
+    
+    // Réinjection de la zone de suppression
     function reinsertDeleteZone() {
       let deleteZone = grid.querySelector('#delete-zone');
       if (!deleteZone) {
-        // On recrée la zone à partir de l'originale
         deleteZone = deleteZoneOriginal.cloneNode(true);
         deleteZone.draggable = false;
         deleteZone.style.position = 'absolute';
@@ -93,9 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteZone.style.left = '0';
         deleteZone.style.width = '95%';
         deleteZone.style.zIndex = '10';
-        // Empêcher le drag sur la zone de suppression
         deleteZone.addEventListener('mousedown', function(e) { e.stopPropagation(); });
-        // Gestion du drop sur la zone de suppression
         deleteZone.addEventListener('dragover', function(e) { e.preventDefault(); });
         deleteZone.addEventListener('drop', function(e) {
           e.preventDefault();
@@ -104,8 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
             currentTable.style.zIndex = '1000';
             currentTable.style.transition = 'opacity 0.5s';
             currentTable.style.opacity = '0';
-            // Marquer la table comme supprimée pour qu'elle ne soit plus utilisée par randomize
-            currentTable.classList.add('deleted');
             setTimeout(() => {
               currentTable.remove();
               currentTable = null;
@@ -115,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function () {
         grid.appendChild(deleteZone);
       }
     }
-  
-    // --- Rotation des tables au clic ---
+    
+    // Rotation des tables au clic
     grid.addEventListener('click', function (e) {
       if (isDragAndDrop) {
         isDragAndDrop = false;
@@ -134,10 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
         updateTableModel(container, tableModels[nextIndex]);
       }
     });
-  
-    // --- Mise à jour du modèle de table dans un conteneur ---
-    // On reconstruit l'élément "table" (le carré) avec sa "chaise" (le rond)
-    // et on réaffiche le nom de l'élève s'il existe (stocké dans data-student)
+    
+    // Mise à jour du modèle de table dans un conteneur
     function updateTableModel(container, model) {
       const student = container.getAttribute('data-student');
       container.innerHTML = '';
@@ -152,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
       tableDiv.style.fontFamily = 'var(--font-handwritten)';
       tableDiv.style.textAlign = 'center';
       tableDiv.style.cursor = 'pointer';
-  
+    
       const chair = document.createElement('div');
       chair.className = 'chair';
       chair.style.border = '2px solid var(--accent-color)';
@@ -184,8 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       container.appendChild(tableDiv);
     }
-  
-    // --- Gestion du déplacement des tables par souris ---
+    
+    // Gestion du déplacement des tables par souris
     grid.addEventListener('mousedown', function (e) {
       let target = e.target;
       if (target.nodeType === Node.TEXT_NODE) {
@@ -228,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function () {
           currentTable.style.zIndex = '1000';
           currentTable.style.transition = 'opacity 0.5s';
           currentTable.style.opacity = '0';
-          // Marquer la table comme supprimée pour qu'elle soit ignorée par randomize
           currentTable.classList.add('deleted');
           setTimeout(() => {
             currentTable.remove();
@@ -239,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function () {
       isDragging = false;
       currentTable = null;
     });
-  
-    // --- Gestion de la liste d'élèves ---
+    
+    // Gestion de la liste d'élèves
     validateButton.addEventListener('click', validateStudents);
     studentsTextarea.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
@@ -275,10 +275,9 @@ document.addEventListener('DOMContentLoaded', function () {
       validatedStudents.splice(index, 1);
       updateValidatedStudentsList();
     }
-  
-    // --- Placement aléatoire des élèves ---
+    
+    // Placement aléatoire des élèves
     randomizeButton.addEventListener('click', function () {
-      // Récupérer uniquement les conteneurs qui ne sont pas marqués comme supprimés
       const tableContainers = Array.from(grid.querySelectorAll('[data-model-index]'))
         .filter(container => !container.classList.contains('deleted'));
       if (validatedStudents.length === 0) {
@@ -294,15 +293,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!confirmPlacement) return;
         hasConfirmedExtraTables = true;
       }
-      // Mélanger aléatoirement les conteneurs et la liste des élèves
       const shuffledContainers = shuffleArray(tableContainers);
       const shuffledStudents = shuffleArray([...validatedStudents]);
-      // Pour chaque conteneur du tableau mélangé,
-      // mettre à jour le contenu de l'élément "table" sans détruire la structure (table + chaise)
       shuffledContainers.forEach((container, index) => {
         const tableElement = container.querySelector('.table, .table2');
         if (tableElement) {
-          // Supprimer uniquement les nœuds texte existants (ne pas toucher à la chaise)
+          // Ne supprimer que les nœuds texte afin de conserver l'intégralité (table + chaise)
           Array.from(tableElement.childNodes).forEach(child => {
             if (child.nodeType === Node.TEXT_NODE) {
               tableElement.removeChild(child);
@@ -325,8 +321,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       return array;
     }
-  
-    // --- Réinitialisation des tables chargées (et réinjection de la zone de suppression) ---
+    
+    // Réinitialisation des tables chargées et réinjection de la zone de suppression
     function reinitializeLoadedTables() {
       const loadedContainers = grid.children;
       for (let container of loadedContainers) {
@@ -369,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
         grid.appendChild(deleteZone);
       }
     }
-  
-    // --- Sauvegarde du plan de classe ---
+    
+    // Sauvegarde du plan de classe avec nommage (similaire aux élèves)
     function removeDeleteZoneFromGrid() {
       const deleteZone = grid.querySelector('#delete-zone');
       if (deleteZone) {
@@ -389,15 +385,22 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
         }
       }
-      planSaves[slot] = grid.innerHTML;
+      let planName = prompt("Nom de la sauvegarde du plan de classe :", "Sauvegarde " + (slot + 1));
+      if (!planName) return;
+      // Stocker l'HTML sauvegardé dans un objet { name, html }
+      planSaves[slot] = {
+        name: planName,
+        html: grid.innerHTML
+      };
       localStorage.setItem('planSaves', JSON.stringify(planSaves));
-      document.getElementById(`plan-save-${slot+1}`).textContent = `Sauvegarde ${slot+1} (Sauvegardé)`;
+      document.getElementById(`plan-save-${slot+1}`).textContent = `${planName} (Sauvegardé)`;
       alert(`Plan de classe sauvegardé dans l'emplacement ${slot+1}.`);
       reinsertDeleteZone();
     });
+    
     planSave1Button.addEventListener('click', function() {
       if (planSaves[0] !== null) {
-        grid.innerHTML = planSaves[0];
+        grid.innerHTML = planSaves[0].html;
         reinitializeLoadedTables();
       } else {
         alert("Aucune sauvegarde dans l'emplacement 1.");
@@ -405,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     planSave2Button.addEventListener('click', function() {
       if (planSaves[1] !== null) {
-        grid.innerHTML = planSaves[1];
+        grid.innerHTML = planSaves[1].html;
         reinitializeLoadedTables();
       } else {
         alert("Aucune sauvegarde dans l'emplacement 2.");
@@ -413,14 +416,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     planSave3Button.addEventListener('click', function() {
       if (planSaves[2] !== null) {
-        grid.innerHTML = planSaves[2];
+        grid.innerHTML = planSaves[2].html;
         reinitializeLoadedTables();
       } else {
         alert("Aucune sauvegarde dans l'emplacement 3.");
       }
     });
-  
-    // --- Sauvegarde de la liste d'élèves (limite 3) ---
+    
+    // Sauvegarde de la liste d'élèves (limite 3)
     saveStudentsButton.addEventListener('click', function() {
       if (validatedStudents.length === 0) {
         alert("Aucun élève validé à sauvegarder.");
@@ -428,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       let slot;
       if (studentSaves.length < 3) {
-        slot = studentSaves.length; // Nouvelle sauvegarde
+        slot = studentSaves.length;
       } else {
         let choice = prompt("Les 3 emplacements sont utilisés. Entrez le numéro de l'emplacement à écraser (1, 2 ou 3) :");
         if (!choice) return;

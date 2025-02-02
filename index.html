@@ -1,83 +1,92 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Configuration de base -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan de Salle de Classe</title>
-    
-    <!-- Ressources externes -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
-    <link rel="stylesheet" href="css/style.css">
-    <script defer src="js/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan de Salle de Classe</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/script.js"></script>
 </head>
 <body>
-    <h1>Plan de Salle de Classe</h1>
-    
-    <div class="container">
-        <!-- Section des modèles de tables -->
-        <div id="table-options">
-            <h2>Modèles de tables</h2>
-            <div class="table-model" data-chair="top" draggable="true">
-                <div class="table">
-                    <div class="chair" data-position="top" style="left: 20px; top: -17px;"></div>
-                </div>
-            </div>
-            <div class="table-model" data-chair="right" draggable="true">
-                <div class="table2">
-                    <div class="chair" data-position="right" style="left: 35px; top: 20px;"></div>
-                </div>
-            </div>
-            <div class="table-model" data-chair="bottom" draggable="true">
-                <div class="table">
-                    <div class="chair" data-position="bottom" style="left: 20px; top: 36px;"></div>
-                </div>
-            </div>
-            <div class="table-model" data-chair="left" draggable="true">
-                <div class="table2">
-                    <div class="chair" data-position="left" style="left: -18px; top: 20px;"></div>
-                </div>
-            </div>
-            <hr>
-<h2>Sauvegarder le plan de classe</h2>
-<button id="savePlan">Sauvegarder le plan</button>
-<h2>Mes sauvegardes de plan</h2>
-<div id="plan-saves-container">
-    <button class="plan-save-item" id="plan-save-1">Sauvegarde 1</button>
-    <button class="plan-save-item" id="plan-save-2">Sauvegarde 2</button>
-    <button class="plan-save-item" id="plan-save-3">Sauvegarde 3</button>
-</div>
-        </div>
-        
-        <!-- Zone principale de placement des tables -->
-        <div id="classroom">
-            <h2>Plan de Classe</h2>
-            <div id="grid">
-                <!-- Zone "Supprimer une table" -->
-                <div id="delete-zone">
-                    <h2>Déposer une table à supprimer</h2>
-                </div>
-            </div>
-        </div>
+  <!-- Overlay de Bienvenue -->
+  <div id="landing-overlay">
+    <h1>Bienvenue dans le placement de classe</h1>
+    <p>Cette application vous permet d'organiser le placement de vos élèves de manière ludique et interactive. Vous pouvez créer votre plan de salle, déplacer les tables, affecter les élèves et sauvegarder vos configurations.</p>
+    <p>Cliquez sur le bouton ci-dessous pour commencer.</p>
+    <button id="start-button">Commencer le placement</button>
+    <div class="landing-images">
+      <!-- Assurez-vous d'avoir ces images dans votre dossier "images" -->
+      <img src="assets/images/crayon.png" alt="Animation Gauche" class="rotating-left">
+      <img src="assets/images/chaise.png" alt="Animation Droite" class="rotating-right">
+    </div>
+  </div>
 
-        <!-- Section de gestion des élèves -->
-        <div id="students-list">
-            <h2>Entrer un élève</h2>
-            <textarea id="students" placeholder="Entrez les prénoms, un par ligne..."></textarea>
-            <button id="validate">Valider</button>
-            <hr>
-            <h2>Liste des élèves validés</h2>
-            <div id="validated-students-container">
-                <ul id="validated-students"></ul>
-            </div>
-            <button id="randomize">Placement Aléatoire</button>
-            <button id="save">Sauvegarder la liste des élèves</button>
-            <hr>
-            <h2>Mes sauvegardes d'élèves</h2>
-            <div id="saves-container">
-                <!-- Les sauvegardes d'élèves seront ajoutées ici dynamiquement -->
-            </div>
-          </div>
-          
+  <!-- Contenu principal de l'application -->
+  <h2>Plan de Salle de Classe</h2>
+  <div class="container">
+    <!-- Section des modèles de tables -->
+    <div id="table-options">
+      <h3>Modèles de tables</h3>
+      <div class="table-model" data-chair="top" draggable="true">
+        <div class="table">
+          <div class="chair" data-position="top" style="left: 20px; top: -17px;"></div>
+        </div>
+      </div>
+      <div class="table-model" data-chair="right" draggable="true">
+        <div class="table2">
+          <div class="chair" data-position="right" style="left: 35px; top: 20px;"></div>
+        </div>
+      </div>
+      <div class="table-model" data-chair="bottom" draggable="true">
+        <div class="table">
+          <div class="chair" data-position="bottom" style="left: 20px; top: 36px;"></div>
+        </div>
+      </div>
+      <div class="table-model" data-chair="left" draggable="true">
+        <div class="table2">
+          <div class="chair" data-position="left" style="left: -18px; top: 20px;"></div>
+        </div>
+      </div>
+      <hr>
+      <h3>Sauvegarder le plan de classe</h3>
+      <button id="savePlan">Sauvegarder le plan</button>
+      <h3>Mes sauvegardes de plan</h3>
+      <div id="plan-saves-container">
+        <button class="plan-save-item" id="plan-save-1">Sauvegarde 1</button>
+        <button class="plan-save-item" id="plan-save-2">Sauvegarde 2</button>
+        <button class="plan-save-item" id="plan-save-3">Sauvegarde 3</button>
+      </div>
+    </div>
+    
+    <!-- Zone principale de placement des tables -->
+    <div id="classroom">
+      <h3>Plan de Classe</h3>
+      <div id="grid">
+        <!-- Zone "Supprimer une table" -->
+        <div id="delete-zone">
+          <h3>Déposer une table à supprimer</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section de gestion des élèves -->
+    <div id="students-list">
+      <h3>Entrer un élève</h3>
+      <textarea id="students" placeholder="Entrez les prénoms, un par ligne..."></textarea>
+      <button id="validate">Valider</button>
+      <hr>
+      <h3>Liste des élèves validés</h3>
+      <div id="validated-students-container">
+        <ul id="validated-students"></ul>
+      </div>
+      <button id="randomize">Placement Aléatoire</button>
+      <button id="save">Sauvegarder la liste des élèves</button>
+      <hr>
+      <h3>Mes sauvegardes d'élèves</h3>
+      <div id="saves-container">
+        <!-- Les sauvegardes d'élèves seront ajoutées ici dynamiquement -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>
