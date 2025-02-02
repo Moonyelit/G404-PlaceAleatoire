@@ -9,21 +9,23 @@ Ce projet a pour but de créer une application web modulable permettant de gére
 - **🖱️ Drag and Drop** : Permet de déplacer les bureaux et les chaises sur le plan de classe.
 - **👩‍🎓👨‍🎓 Gestion des Apprenants** : Définit le nombre d'apprenants (maximum 30) et affiche une liste de prénoms.
 - **🎲 Génération Aléatoire** : Génère des placements aléatoires des apprenants sur les tables.
-- **💾 Sauvegarde des Configurations** : Enregistre les configurations de placement et les listes de prénoms dans un fichier JSON.
-- **⚠️ Messages d'Erreur** : Affiche des messages d'erreur pour gérer les cas où il y a trop de tables ou pas assez par rapport aux apprenants.
-- **🔄 Modification de Disposition** : Permet de changer la disposition des tables en maintenant et en déplaçant une table déjà placée.
+- **💾 Sauvegarde des Configurations et des Listes** : Enregistre les configurations de placement (limitées à 3 emplacements) ainsi que les sauvegardes des listes d'élèves.
+- **🔄 Modification de Disposition** : Permet de changer la disposition des tables en les faisant pivoter au clic.
+- **💡 Commentaires Code** : Des commentaires ont été ajoutés dans le code pour faciliter la compréhension des fonctions clés.
 
 ## 🛠️ Installation
 
-1. Clonez le dépôt sur votre machine locale.
-2. Ouvrez le fichier `index.html` dans votre navigateur pour accéder à l'application.
+1. Clonez le dépôt sur votre machine locale :  
+   git clone https://github.com/VotreNom/votre-repo.git
+2. OU, rendez-vous sur le site directement via ce lien : [Ici](https://moonyelit.github.io/G404-PlaceAleatoire/)
+3. Ouvrez le fichier `index.html` dans votre navigateur pour accéder à l'application.
 
 ## 🚀 Utilisation
 
 - Glissez et déposez les modèles de tables depuis la section "Modèles de tables" vers la zone de placement.
-- Entrez les prénoms des apprenants dans la zone de texte prévue à cet effet.
-- Utilisez le bouton "Valider" pour créer une liste de prénoms.
+- Entrez les prénoms des apprenants dans la zone de texte prévue à cet effet, puis cliquez sur "Valider".
 - Cliquez sur "Placement Aléatoire" pour générer une disposition aléatoire des apprenants sur les tables.
+- Utilisez les boutons de sauvegarde pour enregistrer et charger les plans de classe ainsi que les listes d'élèves.
 
 ## 💻 Technologies Utilisées
 
@@ -37,7 +39,7 @@ Les contributions sont les bienvenues ! Veuillez soumettre une demande de tirage
 
 ## 👥 Auteurs
 
-- [Votre Nom] - Développeur principal
+- Moonye // FOUGEROUSE Élodie - Développeur principal
 
 ## 📄 License
 
