@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
     
-    // Mise à jour du modèle de table dans un conteneur
+    // Mise à jour de l'apparence et du contenu d'une table selon le modèle choisi.
     function updateTableModel(container, model) {
       const student = container.getAttribute('data-student');
       container.innerHTML = '';
@@ -248,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validateStudents();
       }
     });
+    // Valide la liste des élèves en filtrant et ajoutant les noms uniques.
     function validateStudents() {
       const students = studentsTextarea.value.split('\n').filter(name => name.trim() !== '');
       const uniqueStudents = [...new Set(students)];
@@ -255,6 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
       updateValidatedStudentsList();
       studentsTextarea.value = '';
     }
+    // Met à jour l'affichage de la liste validée des élèves.
     function updateValidatedStudentsList() {
       validatedStudentsList.innerHTML = '';
       validatedStudents.forEach((student, index) => {
@@ -271,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validatedStudentsList.appendChild(li);
       });
     }
+    // Supprime un élève de la liste validée à partir de son index.
     function deleteStudent(index) {
       validatedStudents.splice(index, 1);
       updateValidatedStudentsList();
@@ -314,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     });
+    // Mélange de manière aléatoire les éléments d'un tableau.
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -323,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     // Réinitialisation des tables chargées et réinjection de la zone de suppression
+    // Réinitialise les tables chargées en remettant les attributs par défaut et réinsère la zone de suppression.
     function reinitializeLoadedTables() {
       const loadedContainers = grid.children;
       for (let container of loadedContainers) {
@@ -367,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     // Sauvegarde du plan de classe avec nommage (similaire aux élèves)
+    // Retire la zone de suppression de la grille avant de sauvegarder le plan de classe.
     function removeDeleteZoneFromGrid() {
       const deleteZone = grid.querySelector('#delete-zone');
       if (deleteZone) {
@@ -469,4 +475,3 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
-  
